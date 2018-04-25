@@ -59,6 +59,7 @@ df %>%
 ```
 
 ```{r}
+df$occupation <- str_replace(df$occupation, "\x96", "/")
 
 highest_paying_occupations_for_women <- df %>%
   filter(gender=="Female") %>%
@@ -68,8 +69,6 @@ top_25 <- df %>%
   filter(occupation %in% highest_paying_occupations_for_women$occupation) %>%
   select(occupation,gender,average_taxable_income) %>%
   spread(key=gender, value=average_taxable_income) 
-  
-top_25$occupation <- str_replace(top_25$occupation, "\x96", "/")
   
 pal <- wes_palette(25, name = "Moonrise2", type = "continuous")
 
@@ -89,16 +88,14 @@ top_25 %>%
     labs(title="Top 25 highest paying jobs for females", y="A$", x="") +
     scale_y_continuous(labels = comma) + 
     scale_color_manual(values = pal) +
-    annotate("text", x=3, y=550000, label = "Female") +  
-    annotate("text", x=2, y=541000, label = "Male") +
-    annotate("point", x=3, y=520000) +
-    annotate("point", x=3, y=520000, size=1, col="white") +
-    annotate("point", x=2, y=520000) 
+    annotate("text", x=2:3, y=510000, label = c("Male","Female"), hjust = 0) + 
+    annotate("point", x=3, y=500000) +
+    annotate("point", x=3, y=500000, size=1, col="white") +
+    annotate("point", x=2, y=500000) 
 
 ```
 
 ```{r fig.height=8, fig.width=8}
-df$occupation <- str_replace(df$occupation, "\x96", "/")
 
 focused_df <- df %>%
   select(occupation,gender,average_taxable_income) %>%
@@ -126,8 +123,7 @@ t15 <- top_15 %>%
     labs(title="Top 15 by Difference", y="A$", x="") +
     scale_y_continuous(labels = comma) + 
     scale_color_manual(values = pal) +
-    annotate("text", x=3, y=550000, label = "Female") +  
-    annotate("text", x=2, y=540000, label = "Male") +
+    annotate("text", x=2:3, y=520000, label = c("Male","Female"), hjust = 0) +  
     annotate("point", x=3, y=500000) +
     annotate("point", x=3, y=500000, size=1, col="white") +
     annotate("point", x=2, y=500000) 
@@ -147,8 +143,7 @@ b15 <- bottom_15 %>%
     labs(title="Bottom 15 by Difference", y="A$", x="") +
     scale_y_continuous(labels = comma) + 
     scale_color_manual(values = pal) +
-    annotate("text", x=2, y=225000, label = "Female") +  
-    annotate("text", x=1, y=220000, label = "Male") +
+    annotate("text", x=1:2, y=210000, label = c("Male","Female"), hjust = 0) +  
     annotate("point", x=2, y=200000) +
     annotate("point", x=2, y=200000, size=1, col="white") +
     annotate("point", x=1, y=200000) 
