@@ -1,0 +1,160 @@
+---
+title: "Tidy Tuesday - Week 4"
+subtitle: "Gender differences in Australian Salaries"
+output: html_notebook
+---
+
+
+```{r}
+library(tidyverse)
+library(wesanderson)
+library(scales)
+library(patchwork)
+```
+
+
+```{r}
+df <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/week4_australian_salary.csv")
+
+head(df)
+```
+
+```{r}
+summary(df)
+
+```
+
+```{r}
+
+avg_female_income = mean(df$average_taxable_income[df$gender == "Female"])
+avg_male_income = mean(df$average_taxable_income[df$gender == "Male"])
+
+df %>%
+  mutate(inc_in_thousands = average_taxable_income / 1000) %>%
+  ggplot(aes(x=gender,y=average_taxable_income, color=gender)) + 
+    geom_jitter(alpha=0.4) +
+    scale_color_manual(values=wes_palettes$Moonrise2) +
+    theme_light() +
+    theme(legend.position = "none") +
+    scale_y_continuous(labels = comma) +
+    labs(x="Gender", y="A$", title="Average Taxable Income") 
+    
+
+```
+
+
+```{r}
+
+avg_female_income = mean(df$average_taxable_income[df$gender == "Female"])
+avg_male_income = mean(df$average_taxable_income[df$gender == "Male"])
+
+df %>%
+  ggplot(aes(x=gender,y=average_taxable_income, color=gender)) + 
+    geom_boxplot(alpha=0.4) +
+    scale_color_manual(values=wes_palettes$Moonrise2) +
+    theme_light() +
+    theme(legend.position = "none") +
+    scale_y_continuous(labels = comma) +
+    labs(x="Gender", y="A$", title="Average Taxable Income") 
+    
+```
+
+```{r}
+
+highest_paying_occupations_for_women <- df %>%
+  filter(gender=="Female") %>%
+  top_n(25)
+
+top_25 <- df %>%
+  filter(occupation %in% highest_paying_occupations_for_women$occupation) %>%
+  select(occupation,gender,average_taxable_income) %>%
+  spread(key=gender, value=average_taxable_income) 
+  
+top_25$occupation <- str_replace(top_25$occupation, "\x96", "/")
+  
+pal <- wes_palette(25, name = "Moonrise2", type = "continuous")
+
+top_25 %>%
+  mutate(difference = Male - Female) %>%
+  ggplot(aes(x=fct_reorder(occupation, Female), y = Female, col = occupation)) +
+    geom_segment(aes(x=fct_reorder(occupation, Female), 
+                     xend=fct_reorder(occupation, Female), 
+                     y=Female, 
+                     yend=Male)) + 
+    geom_point(aes(x=occupation,y=Female)) +
+    geom_point(aes(x=occupation,y=Female), col="white", size=1) +
+    geom_point(aes(x=occupation,y=Male)) +
+    coord_flip() + 
+    theme_light() +
+    theme(legend.position = "none") +
+    labs(title="Top 25 highest paying jobs for females", y="A$", x="") +
+    scale_y_continuous(labels = comma) + 
+    scale_color_manual(values = pal) +
+    annotate("text", x=3, y=550000, label = "Female") +  
+    annotate("text", x=2, y=541000, label = "Male") +
+    annotate("point", x=3, y=520000) +
+    annotate("point", x=3, y=520000, size=1, col="white") +
+    annotate("point", x=2, y=520000) 
+
+```
+
+```{r fig.height=8, fig.width=8}
+df$occupation <- str_replace(df$occupation, "\x96", "/")
+
+focused_df <- df %>%
+  select(occupation,gender,average_taxable_income) %>%
+  spread(key=gender, value=average_taxable_income) %>%
+  mutate(diff = Male - Female) 
+
+top_15 <- focused_df %>%
+  top_n(15)
+
+bottom_15 <-focused_df %>%
+  top_n(-15)
+
+t15 <- top_15 %>%
+  ggplot(aes(x=fct_reorder(occupation, diff), y = Female, col = occupation)) +
+    geom_segment(aes(x=fct_reorder(occupation, diff), 
+                     xend=fct_reorder(occupation, diff), 
+                     y=Female, 
+                     yend=Male)) + 
+    geom_point(aes(x=occupation,y=Female)) +
+    geom_point(aes(x=occupation,y=Female), col="white", size=1) +
+    geom_point(aes(x=occupation,y=Male)) +
+    coord_flip() + 
+    theme_light() +
+    theme(legend.position = "none") +
+    labs(title="Top 15 by Difference", y="A$", x="") +
+    scale_y_continuous(labels = comma) + 
+    scale_color_manual(values = pal) +
+    annotate("text", x=3, y=550000, label = "Female") +  
+    annotate("text", x=2, y=540000, label = "Male") +
+    annotate("point", x=3, y=500000) +
+    annotate("point", x=3, y=500000, size=1, col="white") +
+    annotate("point", x=2, y=500000) 
+
+b15 <- bottom_15 %>%
+  ggplot(aes(x=fct_reorder(occupation, diff), y = Female, col = occupation)) +
+    geom_segment(aes(x=fct_reorder(occupation, diff), 
+                     xend=fct_reorder(occupation, diff), 
+                     y=Female, 
+                     yend=Male)) + 
+    geom_point(aes(x=occupation,y=Female)) +
+    geom_point(aes(x=occupation,y=Female), col="white", size=1) +
+    geom_point(aes(x=occupation,y=Male)) +
+    coord_flip() + 
+    theme_light() +
+    theme(legend.position = "none") +
+    labs(title="Bottom 15 by Difference", y="A$", x="") +
+    scale_y_continuous(labels = comma) + 
+    scale_color_manual(values = pal) +
+    annotate("text", x=2, y=225000, label = "Female") +  
+    annotate("text", x=1, y=220000, label = "Male") +
+    annotate("point", x=2, y=200000) +
+    annotate("point", x=2, y=200000, size=1, col="white") +
+    annotate("point", x=1, y=200000) 
+
+t15 + b15 + plot_layout(ncol = 1, nrow = 2)
+
+```
+
