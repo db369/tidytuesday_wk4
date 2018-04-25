@@ -45,9 +45,6 @@ df %>%
 
 ```{r}
 
-avg_female_income = mean(df$average_taxable_income[df$gender == "Female"])
-avg_male_income = mean(df$average_taxable_income[df$gender == "Male"])
-
 df %>%
   ggplot(aes(x=gender,y=average_taxable_income, color=gender)) + 
     geom_boxplot(alpha=0.4) +
