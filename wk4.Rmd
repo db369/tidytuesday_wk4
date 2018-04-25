@@ -1,7 +1,9 @@
 ---
 title: "Tidy Tuesday - Week 4"
-subtitle: "Gender differences in Australian Salaries"
-output: html_notebook
+subtitle: Gender differences in Australian Salaries
+output:
+  html_document:
+    df_print: paged
 ---
 
 
