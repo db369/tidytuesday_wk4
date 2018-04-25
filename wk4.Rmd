@@ -91,7 +91,9 @@ top_25 %>%
     annotate("text", x=2:3, y=510000, label = c("Male","Female"), hjust = 0) + 
     annotate("point", x=3, y=500000) +
     annotate("point", x=3, y=500000, size=1, col="white") +
-    annotate("point", x=2, y=500000) 
+    annotate("point", x=2, y=500000)
+
+#ggsave("top_25.png",dpi=600)
 
 ```
 
@@ -143,12 +145,11 @@ b15 <- bottom_15 %>%
     labs(title="Bottom 15 by Difference", y="A$", x="") +
     scale_y_continuous(labels = comma) + 
     scale_color_manual(values = pal) +
-    annotate("text", x=1:2, y=210000, label = c("Male","Female"), hjust = 0) +  
-    annotate("point", x=2, y=200000) +
-    annotate("point", x=2, y=200000, size=1, col="white") +
-    annotate("point", x=1, y=200000) 
+    annotate("text", x=1:2, y=260000, label = c("Male","Female"), hjust = 0) +  
+    annotate("point", x=2, y=250000) +
+    annotate("point", x=2, y=250000, size=1, col="white") +
+    annotate("point", x=1, y=250000) 
 
-t15 + b15 + plot_layout(ncol = 1, nrow = 2)
-
+t15 + b15 + plot_layout(ncol = 1, nrow = 2) 
+#ggsave("top_bottom.png", dpi=600)
 ```
-
